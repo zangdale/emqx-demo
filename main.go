@@ -16,6 +16,9 @@ import (
 
 官网: https://www.emqx.cn/mqtt/public-mqtt5-broker
 
+docker:  docker run -d --name emqx -p 1883:1883 -p 8083:8083 -p 8883:8883 -p 8084:8084 -p 18083:18083 emqx/emqx:v4.0.0
+user: admin/public
+
 Broker: broker.emqx.io
 TCP 端口： 1883
 Websocket 端口： 8083
@@ -25,8 +28,8 @@ Websocket/TLS 端口： 8084
 */
 
 var (
-	topic  = "topic/buguai"
-	broker = "broker.emqx.io"
+	topic  = "ss"
+	broker = "127.0.0.1"
 
 	port = 1883
 )
@@ -52,15 +55,17 @@ func main() {
 	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", broker, port))
 
 	// 设置 TLS
-	tlsConfig := NewTlsConfigNoClientCert()
-	opts.SetTLSConfig(tlsConfig)
+	//tlsConfig := NewTlsConfigNoClientCert()
+	//opts.SetTLSConfig(tlsConfig)
 
 	opts.SetClientID("go_mqtt_client")
-	opts.SetUsername("emqx")
-	opts.SetPassword("public")
+	//opts.SetUsername("emqx")
+	//opts.SetPassword("public")
 	opts.SetDefaultPublishHandler(messagePubHandler)
 	opts.OnConnect = connectHandler
 	opts.OnConnectionLost = connectLostHandler
+	// 遗言
+	opts.SetWill("offline", "go_mqtt_client offline", 1, false)
 
 	client := mqtt.NewClient(opts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
